@@ -20,14 +20,15 @@ ggplot(dat, aes(x=date, y=hours)) + geom_point() +
 ggplot(dat, aes(x=date, y=cumsum)) + geom_point() +
     geom_smooth(method = 'lm', formula = y ~ x) + theme_minimal()
 
-# stats 
+# yearly
 max(dat$cumsum)/3
 
-# average yearly amount
 reg <- lm(cumsum ~ date, dat)
 reg$coefficients[2] * 365
 
-# 2020 extrapolation (but misses end of year dip so probably overestimate)
+# 2020
+max(dat$cumsum) - dat$cumsum[67]
+
 reg20 <- lm(cumsum ~ date, dat[dat$date > as.Date('2020-01-01'),])
 reg20$coefficients[2] * 365
 
