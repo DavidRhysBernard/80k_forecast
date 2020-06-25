@@ -11,7 +11,7 @@ library(lubridate)
 url <- 'https://podcasts.apple.com/us/podcast/80-000-hours-podcast/id1245002988'
 
 # Download binaries, start driver, and get client object.
-rd <- rsDriver(browser = "chrome", port = 4442L, chromever = "83.0.4103.39")
+rd <- rsDriver(browser = "chrome", port = 4443L, chromever = "83.0.4103.39")
 ffd <- rd$client
 
 # Navigate to page.
@@ -52,8 +52,8 @@ episodes$description <- as.character(episodes$description)
 episodes$length <- as.character(episodes$length)
 
 # keeping only new episodes
-episodes <- filter(episodes, str_detect(title, '#')) 
 episodes <- filter(episodes, !str_detect(title, 'Classic episode'))
+episodes <- filter(episodes, str_detect(title, '#|Rob & Howie|Arden & Rob')) 
 
 # adding '0 hr ' to those less than one hour
 episodes$length <- ifelse(!str_detect(episodes$length, "hr"),  
