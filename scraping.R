@@ -53,7 +53,7 @@ episodes$length <- as.character(episodes$length)
 
 # keeping only new episodes
 episodes <- filter(episodes, !str_detect(title, 'Classic episode'))
-episodes <- filter(episodes, str_detect(title, '#|Rob & Howie|Arden & Rob')) 
+episodes <- filter(episodes, str_detect(title, '#|Rob & Howie|Arden & Rob|plastic straws')) 
 
 # adding '0 hr ' to those less than one hour
 episodes$length <- ifelse(!str_detect(episodes$length, "hr"),  
@@ -62,6 +62,14 @@ episodes$length <- ifelse(!str_detect(episodes$length, "hr"),
 # in terms of hours
 episodes$hours <- hm(episodes$length)
 episodes$hours <- hour(episodes$hours) + minute(episodes$hours)/60
+
+# year and month
+episodes$year <- as.numeric(str_sub(episodes$date, 1, 4))
+episodes$month <- as.numeric(str_sub(episodes$date, 6, 7))
+
+# cumulative hours
+episodes <- episodes[order(episodes$date),]
+episodes <- mutate(episodes, cumsum = cumsum(hours))
 
 write_csv(episodes, "episodes.csv")
 

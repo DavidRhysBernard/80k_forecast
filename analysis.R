@@ -5,8 +5,6 @@ library(lubridate)
 
 dat <- read_csv("episodes.csv")
 
-dat <- dat[order(dat$date),]
-dat <- mutate(dat, cumsum = cumsum(hours))
 
 ### graphs
 ggplot(dat, aes(x=hours)) + geom_histogram(binwidth=0.25, center = 0.125) +
@@ -22,18 +20,59 @@ ggplot(dat, aes(x=date, y=cumsum)) + geom_point() +
 
 # yearly
 max(dat$cumsum)/3
-
 reg <- lm(cumsum ~ date, dat)
-reg$coefficients[2] * 365
+reg$coefficients[2] * 366
 
-# 2020
-max(dat$cumsum) - dat$cumsum[67]
+# yearly totals
+cumsum2020 <- max(dat$cumsum) - max(dat$cumsum[dat$year==2019])
+max(dat$cumsum[dat$year==2019]) - max(dat$cumsum[dat$year==2018])
+max(dat$cumsum[dat$year==2018]) - max(dat$cumsum[dat$year==2017])
+max(dat$cumsum[dat$year==2017]) 
 
-reg20 <- lm(cumsum ~ date, dat[dat$date > as.Date('2020-01-01'),])
-reg20$coefficients[2] * 365
+#2020 rate
+drate20 <- cumsum2020/180
 
-(summary(reg20)$coefficients[2,1] + 2*summary(reg20)$coefficients[2,2]) * 365 # upper bound
+# first half of year totals
+fir_18 <- max(dat$cumsum[dat$year==2018 & dat$month<7]) - max(dat$cumsum[dat$year==2017])
+fir_19 <- max(dat$cumsum[dat$year==2019 & dat$month<7]) - max(dat$cumsum[dat$year==2018])
 
+# yearly rates + prediction from regression
+reg17 <- lm(cumsum ~ date, dat[dat$year==2017,])
+reg17$coefficients[2]
+reg17$coefficients[2] * 366
 
+reg18 <- lm(cumsum ~ date, dat[dat$year==2018,])
+reg18$coefficients[2]
+reg18$coefficients[2] * 366
 
+reg19 <- lm(cumsum ~ date, dat[dat$year==2019,])
+reg19$coefficients[2]
+reg19$coefficients[2] * 366
 
+reg20 <- lm(cumsum ~ date, dat[dat$year==2020,])
+reg20$coefficients[2]
+reg20$coefficients[2] * 366
+
+# amandango's extrapolations
+sec_17 <- max(dat$cumsum[dat$year==2017]) - max(dat$cumsum[dat$year==2017 & dat$month<7])
+sec_18 <- max(dat$cumsum[dat$year==2018]) - max(dat$cumsum[dat$year==2018 & dat$month<7])
+sec_19 <- max(dat$cumsum[dat$year==2019]) - max(dat$cumsum[dat$year==2019 & dat$month<7])
+
+drate17 <- sec_17/183
+drate18 <- sec_18/183
+drate19 <- sec_19/183
+
+avg_drate <- mean(c(drate17, drate18, drate19))
+
+186 * avg_drate
+186 * drate17
+186 * drate18
+186 * drate19
+186 * drate20
+
+cumsum2020 + 186*avg_drate
+cumsum2020 + 186*drate17
+cumsum2020 + 186*drate18
+cumsum2020 + 186*drate19
+cumsum2020 + 186*drate20
+cumsum2020 + 186*0.2
